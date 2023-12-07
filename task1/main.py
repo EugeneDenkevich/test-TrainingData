@@ -26,38 +26,58 @@ for header in HEADERS.strip().split('\n'):
     key, value = header.split(': ')
     headers_dict[key] = value
 
+autobase = {}
 
-def save_image(response: "requests.Response") -> None:
-    if not os.path.exists(os.path.join('task1', 'images')):
-        os.makedirs(os.path.join('task1', 'images'))
+def save_image(brand: str, adverts: list) -> None:
+    for advert in adverts:
+        auto = advert[0]
+        urls = advert[1]
 
-    with open(os.path.join("task1", "images", f"{str(id(response))}.jpg"), 'wb') as file:
-        file.write(response.content)
+        base_path = os.path.join('task1', brand, auto)
+        counter = 1
+        while os.path.exists(base_path):
+            base_path = os.path.join('task1', brand, auto + f" ({counter + 1})")
+            counter += 1
+        os.makedirs(base_path)
 
-    print('Downloaded successfully')
+        for url in urls:
+            response = requests.get(url)
+            file_path = f"{str(id(response))}.jpg"
+            
+            with open(os.path.join(base_path, file_path), 'wb') as file:
+                file.write(response.content)
 
 
 # Получаем первых 10 ссылок на марки авто
 response_home = requests.get(URL, headers=headers_dict)
 soup = bs(response_home.text, "html.parser")
-tags_a_brands = soup.find_all("a", class_="IndexMarks__item", limit=10)
-links_brands = [link.get('href') for link in tags_a_brands]
+tags_a_brands = soup.select("a.IndexMarks__item", limit=2)
+for tag_brand in tags_a_brands:
 
+    brand_name = tag_brand.find("div", "IndexMarks__item-name").get_text().encode("ISO-8859-1").decode("utf-8")
+    brand_url = tag_brand.get('href')
 
-# Получаем первых 10 объявлений из каждой марки
-for link_brands in links_brands:
-    response_brands = requests.get(link_brands, headers=headers_dict)
+    response_brands = requests.get(brand_url, headers=headers_dict)
     soup_advert = bs(response_brands.text, "html.parser")
-    tags_a_advert = soup_advert.select("a.ListingItemTitle__link", limit=10)
-    links_advert = [link.get('href') for link in tags_a_advert]
+    tags_a_advert = soup_advert.select("a.Link.ListingItemTitle__link", limit=10)
 
+    auto_names_and_images_list = []
+    for tag_advert in tags_a_advert:
+        auto_name = tag_advert.get_text().encode("ISO-8859-1").decode("utf-8")
 
-# TODO
-# Получаем первые 5 фото каждого объявления
-response_images = requests.get(links_advert[0], headers=headers_dict)
-soup_images = bs(response_images.text, "html.parser")
-tags_img_images = soup_images.select("img.ImageGalleryDesktop__image, img.ImageGalleryDesktop__image_hidden", limit=5)
-images_urls = [f"https:{image_tag.get('src')}" for image_tag in tags_img_images]
-for image_url in images_urls:
-    response_image = requests.get(image_url)
-    save_image(response_image)
+        # Получим список ссылок на фото авто
+        auto_advert_url = tag_advert.get('href')
+        response_images = requests.get(auto_advert_url, headers=headers_dict)
+        soup_images = bs(response_images.text, "html.parser")
+        tags_img_images = soup_images.select("img.ImageGalleryDesktop__image, img.ImageGalleryDesktop__image_hidden", limit=5)
+        auto_images = [f"https:{image_tag.get('src')}" for image_tag in tags_img_images]
+        # -------
+
+        auto_names_and_images_list.append((auto_name, auto_images))
+
+    autobase[brand_name] = auto_names_and_images_list
+
+for brand, adverts in autobase.items():
+    save_image(brand, adverts)
+
+print("Success")
