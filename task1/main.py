@@ -21,63 +21,95 @@ TE: trailers
 """
 
 
-headers_dict = {}
-for header in HEADERS.strip().split('\n'):
-    key, value = header.split(': ')
-    headers_dict[key] = value
-
-autobase = {}
-
-def save_image(brand: str, adverts: list) -> None:
-    for advert in adverts:
-        auto = advert[0]
-        urls = advert[1]
-
-        base_path = os.path.join('task1', brand, auto)
-        counter = 1
-        while os.path.exists(base_path):
-            base_path = os.path.join('task1', brand, auto + f" ({counter + 1})")
-            counter += 1
-        os.makedirs(base_path)
-
-        for url in urls:
-            response = requests.get(url)
-            file_path = f"{str(id(response))}.jpg"
-            
-            with open(os.path.join(base_path, file_path), 'wb') as file:
-                file.write(response.content)
+BRAND_COUNT = 2
+ADVERT_COUNT = 10
+IMAGE_COUNT = 5
 
 
-# Получаем первых 10 ссылок на марки авто
-response_home = requests.get(URL, headers=headers_dict)
-soup = bs(response_home.text, "html.parser")
-tags_a_brands = soup.select("a.IndexMarks__item", limit=2)
-for tag_brand in tags_a_brands:
+def get_headers(headers: "str") -> "dict":
+    headers_dict = {}
 
-    brand_name = tag_brand.find("div", "IndexMarks__item-name").get_text().encode("ISO-8859-1").decode("utf-8")
-    brand_url = tag_brand.get('href')
+    for header in headers.strip().split('\n'):
+        key, value = header.split(': ')
+        headers_dict[key] = value
 
-    response_brands = requests.get(brand_url, headers=headers_dict)
-    soup_advert = bs(response_brands.text, "html.parser")
-    tags_a_advert = soup_advert.select("a.Link.ListingItemTitle__link", limit=10)
+    return headers_dict
 
-    auto_names_and_images_list = []
-    for tag_advert in tags_a_advert:
-        auto_name = tag_advert.get_text().encode("ISO-8859-1").decode("utf-8")
 
-        # Получим список ссылок на фото авто
-        auto_advert_url = tag_advert.get('href')
-        response_images = requests.get(auto_advert_url, headers=headers_dict)
-        soup_images = bs(response_images.text, "html.parser")
-        tags_img_images = soup_images.select("img.ImageGalleryDesktop__image, img.ImageGalleryDesktop__image_hidden", limit=5)
-        auto_images = [f"https:{image_tag.get('src')}" for image_tag in tags_img_images]
-        # -------
+def get_autobase(headers: "dict"):
+    autobase = {}
+    counter = 1
 
-        auto_names_and_images_list.append((auto_name, auto_images))
+    response_home = requests.get(URL, headers=headers)
+    soup = bs(response_home.text, "html.parser")
+    tags_a_brands = soup.select("a.IndexMarks__item", limit=BRAND_COUNT)
 
-    autobase[brand_name] = auto_names_and_images_list
+    for tag_brand in tags_a_brands:
+        flag = True
+        print(f"\nСбор данных по марке: {counter}/{BRAND_COUNT}")
+        counter += 1
 
-for brand, adverts in autobase.items():
-    save_image(brand, adverts)
+        brand_name = tag_brand.find("div", "IndexMarks__item-name").get_text().encode("ISO-8859-1").decode("utf-8")
+        brand_url = tag_brand.get('href')
+        response_brands = requests.get(brand_url, headers=headers)
+        soup_advert = bs(response_brands.text, "html.parser")
+        tags_a_advert = soup_advert.select("a.Link.ListingItemTitle__link", limit=ADVERT_COUNT)
 
-print("Success")
+        auto_names_and_images_list = []
+        
+        for tag_advert in tags_a_advert:
+            auto_name = tag_advert.get_text().encode("ISO-8859-1").decode("utf-8")
+            if flag:
+                print(f"Получаем {ADVERT_COUNT} объявлений: ", end="", flush=True)
+                flag = False
+            auto_advert_url = tag_advert.get('href')
+            response_images = requests.get(auto_advert_url, headers=headers)
+            soup_images = bs(response_images.text, "html.parser")
+            tags_img_images = soup_images.select("img.ImageGalleryDesktop__image, img.ImageGalleryDesktop__image_hidden", limit=IMAGE_COUNT)
+            auto_images = [f"https:{image_tag.get('src')}" for image_tag in tags_img_images]
+    
+            auto_names_and_images_list.append((auto_name, auto_images))
+            if not flag:
+                print(".", end="", flush=True)
+
+        autobase[brand_name] = auto_names_and_images_list
+
+    print('\nГотово')
+    return autobase
+
+
+def save_image(autobase: "dict") -> None:
+    print('\nСкачивание фото')
+    for brand, adverts in autobase.items():
+        for advert in adverts:
+            auto = advert[0]
+            urls = advert[1]
+
+            base_path = os.path.join('task1', brand, auto)
+            counter = 1
+            while os.path.exists(base_path):
+                base_path = os.path.join('task1', brand, auto + f" ({counter + 1})")
+                counter += 1
+            os.makedirs(base_path)
+
+            for url in urls:
+                response = requests.get(url)
+                file_path = f"{str(id(response))}.jpg"
+                
+                with open(os.path.join(base_path, file_path), 'wb') as file:
+                    file.write(response.content)
+
+
+def main():
+    print("-----------------")
+    print("Начинаем парсинг")
+    headers = get_headers(HEADERS)
+    autobase = get_autobase(headers)
+
+    save_image(autobase)
+    print("----------------")
+    print("Парсинг завершён")
+
+
+if __name__ == "__main__":
+    main()
