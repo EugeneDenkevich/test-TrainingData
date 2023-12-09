@@ -1,11 +1,8 @@
 # Test tasks for TrainingData technical department
----
-## Task1:
-#### Environment:
+### Environment:
 ```
 cp task1/.env-example task1/.env-task1
 ```
-Try to use COOKIE from provided .env-example. But if this results in an error, use the cookies that auto.ru will provide you. Open your browser and copy it from Request Headers.
 ```
 pip install pipenv
 ```
@@ -15,6 +12,11 @@ pipenv shell
 ```
 pipenv install
 ```
+---
+## Task1:
+
+Try to use COOKIE from provided .env-example. But if this results in an error, use the cookies that auto.ru will provide you. Open your browser and get it from Request Headers. 
+
 #### Run parser:
 ```
 cd task1
@@ -22,6 +24,7 @@ cd task1
 ```
 python main.py
 ```
+Check out the "auto" folder.
 ---
 ## Task2:
 
@@ -42,3 +45,10 @@ python script3.py
 python script4.py
 ```
 ## Task3:
+```
+cd task3
+```
+```
+python main.py
+```
+Check out the "changes" folder.
