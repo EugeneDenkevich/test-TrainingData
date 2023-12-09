@@ -17,5 +17,12 @@ pipenv install
 ```
 #### Run parser:
 ```
-python task1/main.py
+cd task1
+```
+```
+python main.py
+```
+or
+```
+python3 main.py
 ```
