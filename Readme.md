@@ -1,5 +1,5 @@
 # Test tasks for TrainingData technical department
-
+---
 ## Task1:
 #### Environment:
 ```
@@ -22,7 +22,23 @@ cd task1
 ```
 python main.py
 ```
-or
+---
+## Task2:
+
+#### Run scripts:
 ```
-python3 main.py
+cd task2
 ```
+```
+python script1.py
+```
+```
+python script2.py
+```
+```
+python script3.py
+```
+```
+python script4.py
+```
+## Task3:
