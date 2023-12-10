@@ -1,37 +1,47 @@
 import os
 import shutil
 import xml.etree.ElementTree as ET
-import zipfile
 
+from colorama import Fore
+from colorama import Style
 from PIL import Image
 from PIL import ImageDraw
 
-if not os.path.exists(os.path.join("Задание2")):
-    zip_file_path = "task3.zip"
-    extract_folder = "."
 
-    with zipfile.ZipFile(zip_file_path, "r") as zip_ref:
-        zip_ref.extractall(extract_folder)
+def init() -> "dict":
+    base_path = os.path.join("task3", "Задание2")
 
-file = os.path.join("Задание2", "masks.xml")
-tree = ET.parse(file)
-root = tree.getroot()
-IMAGES = root.findall(".//image")
+    if not os.path.exists(base_path):
+        zip_file_path = os.path.join("task3", "task3.zip")
+        extract_folder = os.path.join("task3")
 
-colors = root.findall("./meta/task/labels//label")
-COLORS = {}
-for color in colors:
-    key = color.find("./name").text
-    value = color.find("./color").text
-    COLORS[key] = value
+        shutil.unpack_archive(zip_file_path, extract_folder, "zip")
 
-black_folder = os.path.join("changes", "black")
-alpha_folder = os.path.join("changes", "alpha")
+    file = os.path.join(base_path, "masks.xml")
+    tree = ET.parse(file)
+    root = tree.getroot()
+    images = root.findall(".//image")
 
-FOLDERS = [
-    black_folder,
-    alpha_folder,
-]
+    colors = root.findall("./meta/task/labels//label")
+    colors_dict = {}
+    for color in colors:
+        key = color.find("./name").text
+        value = color.find("./color").text
+        colors_dict[key] = value
+
+    black_folder = os.path.join("task3", "changes", "black")
+    alpha_folder = os.path.join("task3", "changes", "alpha")
+
+    folders = [
+        black_folder,
+        alpha_folder,
+    ]
+    return {
+        "base_path": base_path,
+        "images": images,
+        "colors": colors_dict,
+        "folders": folders,
+    }
 
 
 def hex_to_rgb(color: "str") -> "tuple":
@@ -50,10 +60,16 @@ def get_coords(polygon: "ET.Element") -> "list":
     return coords
 
 
-def create_images(transparency: "tuple", folder: "str") -> "None":
-    for image in IMAGES:
+def create_images(
+    transparency: "tuple",
+    folder: "str",
+    images: "list",
+    base_path: "str",
+    colors: "dict",
+) -> "None":
+    for image in images:
         image_name = image.attrib.get("name").split("/")[-1]
-        image_path = os.path.join("Задание2", "images", image_name)
+        image_path = os.path.join(base_path, "images", image_name)
         image_origin = Image.open(image_path).convert("RGBA")
         mask = Image.new(
             mode="RGBA", size=image_origin.size, color=(0, 0, 0, transparency)
@@ -62,7 +78,7 @@ def create_images(transparency: "tuple", folder: "str") -> "None":
 
         for polygon in image.findall("./polygon"):
             label = polygon.attrib.get("label")
-            color = COLORS[label]
+            color = colors[label]
             rgb_color = hex_to_rgb(color)
             coordinates = get_coords(polygon)
 
@@ -82,6 +98,16 @@ def create_images(transparency: "tuple", folder: "str") -> "None":
 
 
 if __name__ == "__main__":
-    for transparency, folder in zip((255, 0), FOLDERS):
-        create_images(transparency, folder)
-    shutil.rmtree("Задание2")
+    print("---------------------")
+    print("Программа работает...")
+    entrypoint = init()
+    folders = entrypoint["folders"]
+    images = entrypoint["images"]
+    base_path = entrypoint["base_path"]
+    colors = entrypoint["colors"]
+
+    for transparency, folder in zip((255, 0), folders):
+        create_images(transparency, folder, images, base_path, colors)
+    shutil.rmtree(base_path)
+    print(Fore.GREEN + "Готово.")
+    print(Style.RESET_ALL, "---------------------")

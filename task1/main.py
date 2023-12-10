@@ -1,7 +1,10 @@
 import os
+import shutil
 
 import requests
 from bs4 import BeautifulSoup as bs
+from colorama import Fore
+from colorama import Style
 from dotenv import find_dotenv
 from dotenv import load_dotenv
 
@@ -85,7 +88,8 @@ def get_autobase(headers: "dict") -> "None":
 
             auto_names_and_images_list.append((auto_name, auto_images))
             if not flag:
-                print(".", end="", flush=True)
+                print(Fore.GREEN + ".", end="", flush=True)
+                print(Style.RESET_ALL, end="", flush=True)
 
         autobase[brand_name] = auto_names_and_images_list
 
@@ -114,7 +118,8 @@ def save_image(autobase: "dict") -> "int":
 
             for url in urls:
                 try:
-                    print(".", end="", flush=True)
+                    print(Fore.GREEN + ".", end="", flush=True)
+                    print(Style.RESET_ALL, end="", flush=True)
                     response = requests.get(url)
                     file_path = f"{str(id(response))}.jpg"
 
@@ -123,9 +128,16 @@ def save_image(autobase: "dict") -> "int":
                     ) as file:
                         file.write(response.content)
                 except Exception:
-                    print("*", end="", flush=True)
+                    print(Fore.RED + ".", end="", flush=True)
+                    print(Style.RESET_ALL, end="", flush=True)
                     counter_errors += 1
         counter += 1
+
+        zip_file_path = os.path.join("task1", "example")
+        write_folder = os.path.join("task1", "auto")
+
+        shutil.make_archive(zip_file_path, "zip", write_folder)
+
     return counter_errors
 
 

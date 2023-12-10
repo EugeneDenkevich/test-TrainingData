@@ -3,12 +3,12 @@ import shutil
 import xml.etree.ElementTree as ET
 
 files = [
-    "annotations.xml",
-    "annotations-2.xml",
-    "annotations-3.xml",
+    os.path.join("task2", "annotations.xml"),
+    os.path.join("task2", "annotations-2.xml"),
+    os.path.join("task2", "annotations-3.xml"),
 ]
 
-new_path = os.path.join("changes")
+new_path = os.path.join("task2", "changes")
 if not os.path.exists(new_path):
     os.makedirs(new_path)
 

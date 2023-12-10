@@ -13,6 +13,7 @@ black = "==23.11.0"
 flake8 = "==6.1.0"
 isort = "==6.0.0b2"
 flake8-annotations = "==3.0.1"
+colorama = "==0.4.6"
 
 [dev-packages]
 

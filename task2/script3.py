@@ -1,9 +1,10 @@
+import os
 import xml.etree.ElementTree as ET
 
 files = [
-    "annotations.xml",
-    "annotations-2.xml",
-    "annotations-3.xml",
+    os.path.join("task2", "annotations.xml"),
+    os.path.join("task2", "annotations-2.xml"),
+    os.path.join("task2", "annotations-3.xml"),
 ]
 
 TREES = [ET.parse(file) for file in files]

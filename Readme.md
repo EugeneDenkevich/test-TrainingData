@@ -41,6 +41,8 @@ python task2/script3.py
 ```
 python task2/script4.py
 ```
+Check out the "changes" folder.
+---
 ## Task3:
 ```
 cd task3
