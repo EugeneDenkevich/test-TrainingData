@@ -28,8 +28,8 @@ HEADERS = {
 }
 
 
-BRAND_COUNT = 10
-ADVERT_COUNT = 10
+BRAND_COUNT = 2
+ADVERT_COUNT = 2
 IMAGE_MAX_COUNT = 5
 
 
@@ -103,11 +103,11 @@ def save_image(autobase: "dict") -> "int":
             urls = advert[1]
             print("\n- Объявление", auto)
 
-            base_path = os.path.join("auto", brand, auto)
+            base_path = os.path.join("task1", "auto", brand, auto)
             counter = 1
             while os.path.exists(base_path):
                 base_path = os.path.join(
-                    "auto", brand, auto + f" ({counter + 1})"
+                    "task1", "auto", brand, auto + f" ({counter + 1})"
                 )
                 counter += 1
             os.makedirs(base_path)

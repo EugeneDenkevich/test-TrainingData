@@ -19,10 +19,7 @@ Try to use COOKIE from provided .env-example. But if this results in an error, u
 
 #### Run parser:
 ```
-cd task1
-```
-```
-python main.py
+python task1/main.py
 ```
 Check out the "auto" folder.
 ---
@@ -33,22 +30,22 @@ Check out the "auto" folder.
 cd task2
 ```
 ```
-python script1.py
+python task2/script1.py
 ```
 ```
-python script2.py
+python task2/script2.py
 ```
 ```
-python script3.py
+python task2/script3.py
 ```
 ```
-python script4.py
+python task2/script4.py
 ```
 ## Task3:
 ```
 cd task3
 ```
 ```
-python run.py
+python task3/run.py
 ```
 Check out the "changes" folder.
