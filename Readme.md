@@ -1,4 +1,5 @@
-# Test tasks for TrainingData technical department
+# Test tasks for TrainingData
+technical department
 ### Environment:
 ```
 cp task1/.env-example task1/.env-task1
