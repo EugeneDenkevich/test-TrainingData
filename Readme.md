@@ -15,7 +15,7 @@ pipenv install
 ---
 ## Task1:
 
-Try to use COOKIE from provided .env-example. But if this results in an error, use the cookies that auto.ru will provide you. Open your browser and get it from Request Headers. 
+Try to use COOKIE from provided .env-example. But if this results in an error, use the cookies which auto.ru will provide you. Open your browser and get it from Request Headers. 
 
 #### Run parser:
 ```
