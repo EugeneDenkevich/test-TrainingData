@@ -1,0 +1,18 @@
+version: '3'
+
+output: 'prefixed'
+
+tasks:
+
+  lint:
+    cmds:
+      - black -l 79 .
+      - isort --force-single-line .
+      - flake8 --max-line-length=79 --exclude=.git,__pycache__,.venv --ignore=E203,W503 --max-complexity=10 .
+
+    decs: Run linters
+    dir: "{{.ROOT_DIR}}"
+    platforms:
+      - darwin
+      - linux
+      - windows
