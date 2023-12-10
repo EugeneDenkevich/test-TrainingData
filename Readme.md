@@ -49,6 +49,6 @@ python script4.py
 cd task3
 ```
 ```
-python main.py
+python run.py
 ```
 Check out the "changes" folder.
