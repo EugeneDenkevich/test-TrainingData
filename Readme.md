@@ -27,9 +27,6 @@ Check out the "auto" folder.
 
 #### Run scripts:
 ```
-cd task2
-```
-```
 python task2/script1.py
 ```
 ```
@@ -44,9 +41,6 @@ python task2/script4.py
 Check out the "changes" folder.
 ---
 ## Task3:
-```
-cd task3
-```
 ```
 python task3/run.py
 ```
