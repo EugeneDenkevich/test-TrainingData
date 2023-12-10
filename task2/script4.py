@@ -1,15 +1,14 @@
 import os
 import shutil
 import xml.etree.ElementTree as ET
-from xml.etree.ElementTree import Element
 
 files = [
-    'annotations.xml',
-    'annotations-2.xml',
-    'annotations-3.xml',
+    "annotations.xml",
+    "annotations-2.xml",
+    "annotations-3.xml",
 ]
 
-new_path = os.path.join('changes')
+new_path = os.path.join("changes")
 if not os.path.exists(new_path):
     os.makedirs(new_path)
 
@@ -23,36 +22,37 @@ for file in files:
 TREES = [ET.parse(file) for file in ch_files]
 ROOTS = [tree.getroot() for tree in TREES]
 
-def reverse_ids(root: Element):
-    images = root.findall('.//image')
-    for i, image in enumerate(images):
-        reversed_image_id = image.attrib['id'][::-1]
-        image.attrib['id'] = reversed_image_id
-    return root
 
-def jpg_to_png(root: Element):
-    images = root.findall('.//image')
+def reverse_ids(root: "ET.Element") -> "None":
+    images = root.findall(".//image")
+    for i, image in enumerate(images):
+        reversed_image_id = image.attrib["id"][::-1]
+        image.attrib["id"] = reversed_image_id
+
+
+def jpg_to_png(root: "ET.Element") -> "None":
+    images = root.findall(".//image")
     for image in images:
-        image_name = image.attrib['name']
-        old_ext = 'jpg'
-        new_ext = 'png'
+        image_name = image.attrib["name"]
+        old_ext = "jpg"
+        new_ext = "png"
         position = image_name.rfind(old_ext)
         new_image_name = image_name[:position] + new_ext
-        image.attrib['name'] = new_image_name
-    return root
+        image.attrib["name"] = new_image_name
 
-def left_only_name(root: Element):
-    images = root.findall('.//image')
+
+def left_only_name(root: "ET.Element") -> "None":
+    images = root.findall(".//image")
     for image in images:
-        only_image_name = image.attrib['name'].split('/')[-1]
-        image.attrib['name'] = only_image_name
-    return root
+        only_image_name = image.attrib["name"].split("/")[-1]
+        image.attrib["name"] = only_image_name
+
 
 for root, file in zip(ROOTS, ch_files):
     reverse_ids(root)
     jpg_to_png(root)
     left_only_name(root)
-    with open(file, 'wb') as new_file:
+    with open(file, "wb") as new_file:
         tree = ET.ElementTree(root)
         tree.write(
             new_file,
