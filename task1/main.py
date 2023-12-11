@@ -36,7 +36,7 @@ ADVERT_COUNT = 10
 IMAGE_MAX_COUNT = 5
 
 
-def get_autobase(headers: "dict") -> "None":
+def get_autobase(headers: "dict") -> "dict":
     autobase = {}
     counter = 1
 
